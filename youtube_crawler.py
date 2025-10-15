@@ -268,6 +268,8 @@ class YouTubeCrawler:
                      max_videos: int = 50,
                      max_comments_per_video: int = 100,
                      days_back: int = 30,
+                     start_date: Optional[str] = None,
+                     end_date: Optional[str] = None,
                      save_format: str = 'json') -> Dict[str, Any]:
         """
         키워드로 전체 크롤링 실행
@@ -276,7 +278,9 @@ class YouTubeCrawler:
             keyword (str): 검색 키워드
             max_videos (int): 최대 동영상 수
             max_comments_per_video (int): 동영상당 최대 댓글 수
-            days_back (int): 몇 일 전까지의 동영상을 검색할지
+            days_back (int): 몇 일 전까지의 동영상을 검색할지 (start_date, end_date가 없을 때만 사용)
+            start_date (str, optional): 시작 날짜 (YYYY-MM-DD 형식, 예: '2022-01-01')
+            end_date (str, optional): 종료 날짜 (YYYY-MM-DD 형식, 예: '2024-12-31')
             save_format (str): 저장 형식 ('json', 'csv')
             
         Returns:
@@ -284,14 +288,51 @@ class YouTubeCrawler:
         """
         print(f"=== YouTube 크롤링 시작: '{keyword}' ===")
         print(f"설정: 최대 {max_videos}개 동영상, 동영상당 최대 {max_comments_per_video}개 댓글")
-        print(f"기간: 최근 {days_back}일")
         
         # 날짜 범위 설정
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=days_back)
-        
-        published_after = start_date.strftime('%Y-%m-%dT%H:%M:%SZ')
-        published_before = end_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+        if start_date and end_date:
+            # 사용자가 직접 날짜를 지정한 경우
+            try:
+                start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+                end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+                
+                # 종료일을 하루의 끝으로 설정 (23:59:59)
+                end_dt = end_dt.replace(hour=23, minute=59, second=59)
+                
+                published_after = start_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+                published_before = end_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+                
+                print(f"기간: {start_date} ~ {end_date}")
+                
+            except ValueError as e:
+                print(f"날짜 형식 오류: {e}")
+                print("YYYY-MM-DD 형식으로 입력해주세요. (예: 2022-01-01)")
+                return {'videos': [], 'comments': []}
+                
+        elif start_date:
+            # 시작 날짜만 지정된 경우
+            try:
+                start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+                end_dt = datetime.now()
+                
+                published_after = start_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+                published_before = end_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+                
+                print(f"기간: {start_date} ~ 현재")
+                
+            except ValueError as e:
+                print(f"날짜 형식 오류: {e}")
+                return {'videos': [], 'comments': []}
+                
+        else:
+            # 기본값: days_back 사용
+            end_dt = datetime.now()
+            start_dt = end_dt - timedelta(days=days_back)
+            
+            published_after = start_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+            published_before = end_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+            
+            print(f"기간: 최근 {days_back}일")
         
         # 1. 동영상 검색
         videos = self.search_videos(
@@ -411,10 +452,42 @@ def main():
     try:
         max_videos = int(input("최대 동영상 수 (기본값: 50): ") or "50")
         max_comments = int(input("동영상당 최대 댓글 수 (기본값: 100): ") or "100")
-        days_back = int(input("몇 일 전까지 검색할지 (기본값: 30): ") or "30")
     except ValueError:
         print("숫자를 입력해주세요. 기본값을 사용합니다.")
-        max_videos, max_comments, days_back = 50, 100, 30
+        max_videos, max_comments = 50, 100
+    
+    # 날짜 설정 방식 선택
+    print("\n날짜 설정 방식을 선택하세요:")
+    print("1. 직접 날짜 지정 (YYYY-MM-DD)")
+    print("2. 최근 며칠간 (기본값)")
+    
+    date_choice = input("선택 (1 또는 2, 기본값: 2): ").strip() or "2"
+    
+    start_date = None
+    end_date = None
+    days_back = 30
+    
+    if date_choice == "1":
+        start_date = input("시작 날짜 (YYYY-MM-DD, 예: 2022-01-01): ").strip()
+        end_date = input("종료 날짜 (YYYY-MM-DD, 예: 2024-12-31): ").strip()
+        
+        if not start_date or not end_date:
+            print("시작 날짜와 종료 날짜를 모두 입력해주세요.")
+            return
+            
+        # 날짜 형식 검증
+        try:
+            datetime.strptime(start_date, '%Y-%m-%d')
+            datetime.strptime(end_date, '%Y-%m-%d')
+        except ValueError:
+            print("날짜 형식이 올바르지 않습니다. YYYY-MM-DD 형식으로 입력해주세요.")
+            return
+    else:
+        try:
+            days_back = int(input("몇 일 전까지 검색할지 (기본값: 30): ") or "30")
+        except ValueError:
+            print("숫자를 입력해주세요. 기본값을 사용합니다.")
+            days_back = 30
     
     save_format = input("저장 형식 (json/csv, 기본값: json): ").strip().lower() or "json"
     
@@ -425,6 +498,8 @@ def main():
             max_videos=max_videos,
             max_comments_per_video=max_comments,
             days_back=days_back,
+            start_date=start_date,
+            end_date=end_date,
             save_format=save_format
         )
         

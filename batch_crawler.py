@@ -17,13 +17,15 @@ except ImportError:
     sys.exit(1)
 
 
-def batch_crawl(keywords_list, api_key=None):
+def batch_crawl(keywords_list, api_key=None, start_date=None, end_date=None):
     """
     여러 키워드를 배치로 크롤링
     
     Args:
         keywords_list (list): 크롤링할 키워드 리스트
         api_key (str): API 키 (없으면 config에서 가져옴)
+        start_date (str): 시작 날짜 (YYYY-MM-DD)
+        end_date (str): 종료 날짜 (YYYY-MM-DD)
     """
     if not api_key:
         api_key = YOUTUBE_API_KEY
@@ -37,6 +39,12 @@ def batch_crawl(keywords_list, api_key=None):
     
     print(f"배치 크롤링 시작: {len(keywords_list)}개 키워드")
     print(f"시작 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    
+    if start_date and end_date:
+        print(f"검색 기간: {start_date} ~ {end_date}")
+    else:
+        print(f"검색 기간: 최근 {DEFAULT_DAYS_BACK}일")
+    
     print("=" * 60)
     
     results = {}
@@ -50,6 +58,8 @@ def batch_crawl(keywords_list, api_key=None):
                 max_videos=DEFAULT_MAX_VIDEOS,
                 max_comments_per_video=DEFAULT_MAX_COMMENTS_PER_VIDEO,
                 days_back=DEFAULT_DAYS_BACK,
+                start_date=start_date,
+                end_date=end_date,
                 save_format=DEFAULT_SAVE_FORMAT
             )
             
@@ -126,10 +136,38 @@ def main():
         return
     
     print(f"\n크롤링할 키워드: {keywords}")
-    confirm = input("계속하시겠습니까? (y/n): ").strip().lower()
+    
+    # 날짜 설정
+    print("\n날짜 설정:")
+    print("1. 직접 날짜 지정 (YYYY-MM-DD)")
+    print("2. 기본값 사용 (최근 30일)")
+    
+    date_choice = input("선택 (1 또는 2, 기본값: 2): ").strip() or "2"
+    
+    start_date = None
+    end_date = None
+    
+    if date_choice == "1":
+        start_date = input("시작 날짜 (YYYY-MM-DD, 예: 2022-01-01): ").strip()
+        end_date = input("종료 날짜 (YYYY-MM-DD, 예: 2024-12-31): ").strip()
+        
+        if not start_date or not end_date:
+            print("시작 날짜와 종료 날짜를 모두 입력해주세요.")
+            return
+            
+        # 날짜 형식 검증
+        try:
+            from datetime import datetime
+            datetime.strptime(start_date, '%Y-%m-%d')
+            datetime.strptime(end_date, '%Y-%m-%d')
+        except ValueError:
+            print("날짜 형식이 올바르지 않습니다. YYYY-MM-DD 형식으로 입력해주세요.")
+            return
+    
+    confirm = input("\n계속하시겠습니까? (y/n): ").strip().lower()
     
     if confirm == 'y':
-        batch_crawl(keywords)
+        batch_crawl(keywords, start_date=start_date, end_date=end_date)
     else:
         print("취소되었습니다.")
 

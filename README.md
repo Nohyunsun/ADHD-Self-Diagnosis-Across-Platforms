@@ -87,16 +87,32 @@ python batch_crawler.py
 python batch_crawler.py
 ```
 
-### 3. 프로그래밍 방식 사용
+### 3. 특정 기간 크롤링 (2022-2024년)
+2022년부터 2024년까지의 데이터를 크롤링하는 전용 스크립트:
+```bash
+python crawl_2022_2024.py
+```
+
+### 4. 프로그래밍 방식 사용
 ```python
 from youtube_crawler import YouTubeCrawler
 
 # 크롤러 초기화
 crawler = YouTubeCrawler("your_api_key")
 
-# 키워드 크롤링
+# 특정 기간 크롤링 (2022-2024년)
 result = crawler.crawl_keyword(
     keyword="파이썬 프로그래밍",
+    max_videos=100,
+    max_comments_per_video=150,
+    start_date="2022-01-01",
+    end_date="2024-12-31",
+    save_format="json"
+)
+
+# 최근 30일 크롤링
+result = crawler.crawl_keyword(
+    keyword="머신러닝",
     max_videos=50,
     max_comments_per_video=100,
     days_back=30,
