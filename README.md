@@ -1,165 +1,418 @@
-# YouTube API 크롤러
+# ADHD Self-Diagnosis Discourse Across Platforms  
+**A Comparative Analysis of Expression and Dissemination Patterns**  
+*Immediate-Reactive vs. Deep-Archive Platforms*
 
-YouTube Data API v3를 사용하여 키워드 검색 결과의 동영상 정보와 댓글을 크롤링하는 Python 스크립트입니다.
+---
 
-## 기능
+## 📌 Overview
 
-- 🔍 키워드로 YouTube 동영상 검색
-- 📊 동영상 상세 정보 수집 (조회수, 좋아요 수, 댓글 수 등)
-- 💬 동영상 댓글 및 대댓글 수집
-- 📅 특정 기간 내 동영상 필터링
-- 💾 JSON 및 CSV 형식으로 데이터 저장
-- 🔄 배치 크롤링 지원
+This repository presents a complete research framework, data pipeline, and analytical methodology for a **comparative discourse analysis of ADHD self-diagnosis content across social media platforms**, focusing on how **platform affordances shape emotional expression, information dissemination, and user engagement.**
 
-## 수집 가능한 데이터
+The study compares:
+- **Immediate-Reactive Platforms**: Twitter (X), Instagram  
+- **Deep-Archive Platforms**: YouTube, Naver Blog  
 
-### 동영상 정보
-- 동영상 ID, 제목, 설명
-- 채널명, 채널 ID
-- 업로드 날짜
-- 조회수, 좋아요 수, 댓글 수
-- 동영상 길이, 화질
-- 카테고리, 태그
-- 썸네일 URL
+The research adopts a **mixed-methods approach**, integrating:
+- Keyword Frequency Analysis  
+- Composite KPI Modeling  
+- Sentiment Analysis (TF-IDF Ensemble)  
+- Topic Modeling (LDA)  
+- Narrative Discourse Interpretation  
 
-### 댓글 정보
-- 댓글 ID, 작성자명
-- 댓글 내용
-- 좋아요 수, 작성일시
-- 대댓글 여부 및 개수
-- 작성자 채널 ID
+---
 
-## 설치 및 설정
+## 🎯 Research Objectives
 
-### 1. 의존성 설치
-```bash
-pip install -r requirements.txt
+This study aims to empirically examine how ADHD self-diagnosis discourse is expressed, disseminated, and received differently depending on platform type.
+
+### Specific Objectives
+1. Compare **keyword frequency patterns** across platform types  
+2. Analyze **user engagement and reaction metrics (Composite KPI)**  
+3. Compare **emotional expression patterns** across platforms  
+4. Compare **topic distributions and discourse structures**
+
+---
+
+## 🧠 Research Design
+
+**Study Type**: Exploratory Comparative Study  
+**Methodology**: Mixed-Methods (Concurrent Design)
+
+### Quantitative Components
+- Keyword frequency analysis  
+- Engagement metrics (Composite KPI)  
+- Sentiment classification  
+- Topic modeling (LDA)  
+
+### Qualitative Components
+- Narrative pattern interpretation  
+- Platform-specific discourse analysis  
+- Contextual topic labeling  
+
+Both analytical approaches are conducted in parallel and integrated during interpretation.
+
+---
+
+## 🌐 Platform Scope
+
+| Platform     | Type               | Core Characteristics |
+|--------------|---------------------|----------------------|
+| Twitter (X) | Immediate-Reactive | Short text, real-time interaction, emotional sharing |
+| Instagram   | Immediate-Reactive | Visual storytelling, infographics, behavioral guidance |
+| YouTube     | Deep-Archive       | Long-form expert explanations, vlog-style narratives |
+| Naver Blog  | Deep-Archive       | Long-form self-reflection, diagnostic journeys |
+
+---
+
+## 📅 Data Collection Period
+
+**January 1, 2022 – December 31, 2024**
+
+This timeframe reflects the rapid increase in ADHD-related searches and the expansion of SNS-based self-diagnosis discourse in South Korea.
+
+---
+
+## 🔎 Search Keywords & Inclusion Criteria
+
+### Search Keywords
+- `ADHD 자가진단`  
+- `ADHD 테스트`
+
+### Search Scope
+- Post titles  
+- Main text  
+- Hashtags  
+- Comments  
+
+### Inclusion Criteria
+- ADHD self-diagnosis explicitly mentioned in at least one of the above fields
+
+### Exclusion Criteria
+- Unrelated mental health posts  
+- Professional medical content without self-diagnosis context  
+- Memes or humor-based posts  
+- Automated or spam-generated content  
+- Duplicate posts  
+
+### Duplicate Removal Method
+- URL normalization  
+- Sentence similarity hashing  
+
+---
+
+## 🛠️ Data Collection Tools
+
+All processes were conducted in **Google Colab (Python)**.
+
+### Core Libraries
+- `snscrape`  
+- `requests`  
+- `BeautifulSoup`  
+- `YouTube Data API v3`  
+- `pandas`, `numpy`  
+
+### Platform-Specific Collection
+- **Twitter (X)**: `snscrape` with `lang:ko`, `since`, `until` filters  
+- **Instagram**: Public hashtag scraping via HTML parsing  
+- **YouTube**: API-based keyword search with date filters  
+- **Naver Blog**: Open API + HTML parsing for full-text extraction  
+
+---
+
+## 🧼 Data Storage & Ethics
+
+### Stored Fields
+```
+doc_id, platform, created_at, text, hashtags, likes, comments, views, url
 ```
 
-### 2. YouTube Data API v3 키 발급
-1. [Google Cloud Console](https://console.cloud.google.com/)에 접속
-2. 새 프로젝트 생성 또는 기존 프로젝트 선택
-3. YouTube Data API v3 활성화
-4. API 키 생성
+### Privacy Protection
+- User identifiers hashed using **SHA-256**
+- Only publicly available content was collected
+- Redistribution of raw data is prohibited
 
-### 3. 설정 파일 생성
-```bash
-cp config_example.py config.py
+### Ethics Approval
+- IRB Exemption Approved  
+  **ID: KKUIRB-202510-E-137**
+
+---
+
+## ⚙️ Analysis Pipeline
+
+```
+Raw Data
+  ↓
+HTML Parsing / API Collection
+  ↓
+Cleaning & Deduplication
+  ↓
+Tokenization (KoNLPy Okt)
+  ↓
+Keyword Frequency Analysis
+  ↓
+KPI Normalization & Modeling
+  ↓
+Sentiment Analysis (TF-IDF Ensemble)
+  ↓
+Topic Modeling (LDA)
+  ↓
+Visualization & Narrative Interpretation
 ```
 
-`config.py` 파일을 열어 API 키를 설정하세요:
-```python
-YOUTUBE_API_KEY = "your_actual_api_key_here"
-```
+---
 
-## 사용법
+## 🧩 Text Preprocessing
 
-### 1. 대화형 크롤링
-```bash
-python youtube_crawler.py
-```
+- Tokenization using **KoNLPy (Okt)**  
+- POS Filtering:
+  - Nouns  
+  - Verbs  
+  - Adjectives  
+- Regex-based cleaning:
+  - URLs  
+  - Emojis  
+  - Special characters  
+- Custom stopword dictionary applied
 
-실행 후 다음 정보를 입력하세요:
-- YouTube Data API v3 키
-- 검색 키워드
-- 최대 동영상 수 (기본값: 50)
-- 동영상당 최대 댓글 수 (기본값: 100)
-- 검색 기간 (기본값: 최근 30일)
-- 저장 형식 (json/csv)
+---
 
-### 2. 배치 크롤링
-여러 키워드를 한 번에 크롤링할 수 있습니다.
+## 📊 Keyword Frequency Analysis
 
-#### 방법 1: 직접 입력
-```bash
-python batch_crawler.py
-```
+Top-20 keywords were extracted per platform using Python’s `collections.Counter`.
 
-#### 방법 2: 파일 사용
-`keywords.txt` 파일에 키워드를 한 줄에 하나씩 입력하고:
-```
-파이썬 프로그래밍
-머신러닝 튜토리얼
-웹개발 강의
-```
+### Sample Observations
+- **Twitter (X)**: 검사, 성인, 병원, 증상, 의심  
+- **Instagram**: 성인, 증상, 아이, 심리, 정보  
+- **YouTube**: 성인, 건강, 아이, 정신, 치료  
+- **Blog**: 성인, 증상, 주의력, 평가, 전문가  
 
-```bash
-python batch_crawler.py
-```
+---
 
-### 3. 프로그래밍 방식 사용
-```python
-from youtube_crawler import YouTubeCrawler
+## 📈 Engagement Metrics (Composite KPI)
 
-# 크롤러 초기화
-crawler = YouTubeCrawler("your_api_key")
+### Metrics Used
+- **Likes**  
+- **Comments**
 
-# 키워드 크롤링
-result = crawler.crawl_keyword(
-    keyword="파이썬 프로그래밍",
-    max_videos=50,
-    max_comments_per_video=100,
-    days_back=30,
-    save_format="json"
-)
+---
 
-print(f"수집된 동영상: {len(result['videos'])}개")
-print(f"수집된 댓글: {len(result['comments'])}개")
-```
+### Normalization (Min-Max)
 
-## 출력 파일
+To eliminate scale differences across platforms, all engagement metrics are normalized using Min-Max scaling:
 
-### JSON 형식
-```
-youtube_data_키워드_20231215_143022.json
-```
+$$
+Norm_{i,p} = \frac{X_{i,p} - \min(X_p)}{\max(X_p) - \min(X_p)}
+$$
 
-### CSV 형식
-```
-youtube_videos_키워드_20231215_143022.csv
-youtube_comments_키워드_20231215_143022.csv
-```
+Where:
+- `X_{i,p}` = Raw engagement value (likes or comments) of post *i* on platform *p*  
+- `min(X_p)` = Minimum engagement value observed on platform *p*  
+- `max(X_p)` = Maximum engagement value observed on platform *p*  
 
-## API 제한 사항
+This transforms all values into a **0–1 range**, enabling fair cross-platform comparison.
 
-YouTube Data API v3는 일일 할당량이 있습니다:
-- 기본 할당량: 10,000 단위/일
-- 검색 요청: 100 단위
-- 동영상 정보 요청: 1 단위
-- 댓글 요청: 1 단위
+---
 
-할당량 관리를 위해:
-- API 호출 간격 조절 (기본 0.1초)
-- 적절한 max_results 설정
-- 필요한 데이터만 수집
+### Composite KPI
 
-## 주의사항
+The composite engagement score for each post is calculated as the mean of normalized likes and comments:
 
-1. **API 키 보안**: API 키를 공개 저장소에 업로드하지 마세요
-2. **저작권**: 수집된 데이터의 사용 시 YouTube 이용약관을 준수하세요
-3. **할당량 관리**: API 호출량을 모니터링하고 적절히 조절하세요
-4. **에러 처리**: 네트워크 오류나 API 제한 시 재시도 로직을 구현하세요
+$$
+KPI_{i,p} = \frac{NormLike_{i,p} + NormComment_{i,p}}{2}
+$$
 
-## 문제 해결
+Where:
+- `NormLike_{i,p}` = Normalized likes for post *i* on platform *p*  
+- `NormComment_{i,p}` = Normalized comments for post *i* on platform *p*  
 
-### 403 Forbidden 오류
-- API 키가 올바른지 확인
-- YouTube Data API v3가 활성화되었는지 확인
-- 일일 할당량을 초과했는지 확인
+This represents the **overall engagement intensity per post**.
 
-### 댓글 수집 실패
-- 댓글이 비활성화된 동영상일 수 있음
-- 연령 제한이 있는 동영상일 수 있음
+---
 
-### 느린 크롤링 속도
-- API 호출 간격을 줄여보세요 (단, 할당량 주의)
-- max_results를 조정하세요
-- 병렬 처리를 고려해보세요
+### Platform-Level Average KPI
 
-## 라이선스
+The average engagement score per platform is defined as:
 
-MIT License
+$$
+\overline{KPI}_p = \frac{1}{N_p} \sum_{i=1}^{N_p} KPI_{i,p}
+$$
 
-## 기여
+Where:
+- `N_p` = Total number of posts collected from platform *p*  
+- `KPI_{i,p}` = Composite KPI score of post *i*  
 
-버그 리포트나 기능 제안은 이슈로 등록해주세요.
+This value represents the **average engagement efficiency of a platform** rather than raw popularity.
+
+---
+
+## ⚠️ Sample Size Bias Control
+
+Platforms with larger datasets are more likely to contain extreme values (outliers).  
+Normalization ensures that engagement scores reflect **relative position within each platform’s distribution**, not raw volume dominance.
+
+Example:
+- `N_YouTube = 738`  
+- `N_Instagram = 58`  
+
+A high absolute YouTube engagement score may still translate to a lower normalized KPI if interaction is concentrated in only a few viral posts.
+
+---
+
+## 📊 Yearly KPI Trend Formula
+
+$$
+\overline{KPI}_{p,y} = \frac{1}{N_{p,y}} \sum_{i=1}^{N_{p,y}} KPI_{i,p,y}
+$$
+
+Where:
+- `p` = Platform  
+- `y` = Year (2022–2024)  
+- `N_{p,y}` = Number of posts on platform *p* in year *y*  
+
+This enables **longitudinal comparison of engagement dynamics over time**.
+
+---
+
+## 😊 Sentiment Analysis
+
+### Model Architecture
+**Dual-input Ensemble TF-IDF Classifier**
+- Character-level TF-IDF (Weight: 0.6)  
+- Word-level TF-IDF (Weight: 0.4)  
+
+### Emotion Classes
+- Happiness  
+- Neutral  
+- Sadness  
+- Fear  
+- Disgust  
+- Anger  
+- Surprise  
+
+### Final Probability Calculation
+$$
+p_{i,k} = \alpha \cdot p_{i,k}^{(char)} + (1 - \alpha) \cdot p_{i,k}^{(word)}
+$$
+
+$$
+\tilde{p}_{i,k} = \frac{s_k \cdot p_{i,k}}{\sum_{j=1}^{K} s_j \cdot p_{i,j}}
+$$
+
+Where:
+- `α` = Model weight (0.6)  
+- `s_k` = Class scaling factor  
+- `K` = Number of emotion classes  
+
+### Model Performance
+- **Accuracy**: 0.645  
+- **Macro F1-score**: 0.643  
+
+---
+
+## 🧠 Topic Modeling (LDA)
+
+### Framework
+- `gensim`  
+- `pyLDAvis`  
+- Coherence Metric: **C_v (NPMI-based)**  
+
+### Topic Configuration
+
+| Platform | Topics (K) | C_v |
+|------------|---------------|------|
+| Twitter (X) | 3 | 0.320 |
+| Instagram | 5 | 0.452 |
+| YouTube | 6 | 0.477 |
+| Blog | 9 | 0.282 |
+
+### Generative Model
+$$
+p(w|d) = \sum_{k=1}^{K} P(w|z_k) \cdot P(z_k|d)
+$$
+
+### Hyperparameters
+- α = 0.1  
+- β = 0.01  
+- λ = 0.8  
+
+---
+
+## 🔍 Narrative Discourse Findings
+
+### Twitter (X)
+- Emotional flow:  
+  **Uncertainty → Self-Verification → Social Empathy**  
+- ADHD often framed as a potential identity marker
+
+### Instagram
+- Action-oriented visual discourse  
+- Focus on routines, checklists, and behavioral guidance
+
+### YouTube
+- Expert-driven educational narratives  
+- Emphasis on long-term management strategies
+
+### Blog
+- Deep self-reflective storytelling  
+- Diagnosis journeys and emotional processing
+
+---
+
+## 📉 Platform Sentiment Patterns
+
+| Platform | Dominant Emotional Profile |
+|------------|-------------------------------|
+| Twitter (X) | Sadness / Anger |
+| Instagram | Neutral |
+| YouTube | Sadness |
+| Blog | Neutral / Sadness |
+
+Immediate platforms emphasize **emotional release**,  
+Deep-archive platforms emphasize **reflection and structured understanding**.
+
+---
+
+## 🧪 Visualization Tools
+
+- `matplotlib`  
+- `seaborn`  
+- `wordcloud`  
+- `networkx`  
+- `pyLDAvis`  
+
+### Output Types
+- Keyword word clouds  
+- KPI trend line plots  
+- Emotion distribution heatmaps  
+- Topic distance maps  
+- Topic keyword bar charts  
+
+---
+
+## 📌 Key Contributions
+
+- Demonstrates **platform affordance effects** on mental health discourse  
+- Proposes a **hybrid emotional-information narrative model**  
+- Provides a scalable **SNS health communication analysis pipeline**  
+- Supports platform-specific content strategy design
+
+---
+
+## 🏷️ Keywords
+
+`ADHD` · `Self-Diagnosis` · `Sentiment Analysis` · `Topic Modeling` · `KPI Modeling` · `Discourse Analysis` · `Social Media Analytics` · `Mental Health NLP`
+
+---
+
+## 👤 Author
+
+**Yunsun Noh**  
+M.S. in Data Science  
+Konkuk University Graduate School  
+
+---
+
+## 📜 License
+
+This research is for academic and non-commercial use only.  
+Redistribution of raw data is prohibited.
